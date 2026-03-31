@@ -1,6 +1,6 @@
 # Film & Review Management Application
 
-![Movie App](movie.png)
+![Movie App](filme.png)
 
 A comprehensive web application built with **Java (Spring Boot)** and **SQL Server** for managing films and user reviews. This project implements a full-featured system with secure authentication, advanced search and filtering, and an optimized incremental rating calculation algorithm.
 
