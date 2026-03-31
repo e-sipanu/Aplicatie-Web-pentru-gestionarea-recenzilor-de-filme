@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Filme</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #101827;
+            color: #f9fafb;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            background: #111827;
+            padding: 16px 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .top-bar-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-right: 16px;
+            white-space: nowrap;
+        }
+
+        .search-input {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input, select, button {
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #374151;
+            background: #020617;
+            color: #e5e7eb;
+            box-sizing: border-box;
+            font-size: 0.9rem;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        button {
+            border: none;
+            background: #3b82f6;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        .content {
+            padding: 20px 24px 30px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .controls-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+
+        .controls-row label {
+            margin-right: 4px;
+        }
+
+        .results-info {
+            font-size: 0.9rem;
+            color: #9ca3af;
+            margin-bottom: 10px;
+        }
+
+        .cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .film-card {
+            background: #111827;
+            border-radius: 10px;
+            padding: 14px 16px;
+            border: 1px solid #1f2937;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, border-color 0.08s ease-out;
+        }
+
+        .film-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+            border-color: #3b82f6;
+        }
+
+        .film-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .film-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .rating {
+            font-weight: 600;
+            color: #4ade80;
+            font-size: 0.95rem;
+        }
+
+        .film-meta {
+            font-size: 0.85rem;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+
+        .film-desc {
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+
+        .film-tags {
+            font-size: 0.8rem;
+            color: #d1d5db;
+            margin-top: 6px;
+        }
+
+        .tag-label {
+            font-weight: 600;
+            color: #9ca3af;
+        }
+
+        .message {
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .message.error {
+            color: #f97373;
+        }
+
+        .message.info {
+            color: #9ca3af;
+        }
+
+        @media (max-width: 800px) {
+            .top-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .top-bar-title {
+                margin-bottom: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <header class="top-bar">
+        <div class="top-bar-title">🎬 Catalog filme</div>
+
+        <div class="search-input">
+            <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Caută după titlu..."
+            />
+        </div>
+
+        <select id="searchFieldSelect">
+            <option value="titlu">Titlu</option>
+            <option value="gen">Gen</option>
+            <option value="actor">Actor</option>
+            <option value="regizor">Regizor</option>
+        </select>
+
+        <select id="sortBySelect">
+            <option value="rating">Rating</option>
+            <option value="titlu">Titlu</option>
+            <option value="an">An</option>
+            <option value="durata">Durată</option>
+        </select>
+
+        <select id="sortDirSelect">
+            <option value="desc">Desc</option>
+            <option value="asc">Asc</option>
+        </select>
+
+        <button onclick="searchFilms()">Caută</button>
+    </header>
+
+    <main class="content">
+        <div class="controls-row">
+            <div>
+                <label for="ratingMinInput">Rating min:</label>
+                <input type="number" id="ratingMinInput" min="0" max="10" step="0.1" style="width:70px;">
+            </div>
+
+            <div>
+                <label for="durataMaxInput">Durată max (min):</label>
+                <input type="number" id="durataMaxInput" min="0" step="10" style="width:90px;">
+            </div>
+
+            <button onclick="resetFilters()">Reset filtre</button>
+        </div>
+
+        <div id="resultsInfo" class="results-info"></div>
+        <div id="message" class="message"></div>
+        <div id="results" class="cards-container"></div>
+    </main>
+</div>
+
+<script>
+    let allFilms = [];
+
+    async function fetchFilms(queryParams = "") {
+        const msg = document.getElementById("message");
+        msg.textContent = "";
+        msg.className = "message";
+
+        try {
+            const res = await fetch("/api/filme/cauta-detaliat" + queryParams);
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error("HTTP " + res.status + " - " + text);
+            }
+            return await res.json();
+        } catch (err) {
+            console.error(err);
+            msg.textContent = "Eroare la comunicarea cu serverul: " + err.message;
+            msg.classList.add("error");
+            return [];
+        }
+    }
+
+    function applyClientFilters(films) {
+        const ratingMinVal = document.getElementById("ratingMinInput").value;
+        const durataMaxVal = document.getElementById("durataMaxInput").value;
+
+        let filtered = films;
+
+        if (ratingMinVal) {
+            const min = parseFloat(ratingMinVal);
+            filtered = filtered.filter(f =>
+                f.ratingMediu != null && f.ratingMediu >= min
+            );
+        }
+
+        if (durataMaxVal) {
+            const max = parseInt(durataMaxVal, 10);
+            filtered = filtered.filter(f =>
+                f.durataMin != null && f.durataMin <= max
+            );
+        }
+
+        return filtered;
+    }
+
+    function applySort(films) {
+        const sortBy = document.getElementById("sortBySelect").value;
+        const sortDir = document.getElementById("sortDirSelect").value;
+
+        return films.slice().sort((a, b) => {
+            let va, vb;
+
+            switch (sortBy) {
+                case "titlu":
+                    va = a.titlu || "";
+                    vb = b.titlu || "";
+                    return sortDir === "asc"
+                        ? va.localeCompare(vb)
+                        : vb.localeCompare(va);
+
+                case "an":
+                    va = a.anAparitie || 0;
+                    vb = b.anAparitie || 0;
+                    return sortDir === "asc" ? va - vb : vb - va;
+
+                case "durata":
+                    va = a.durataMin || 0;
+                    vb = b.durataMin || 0;
+                    return sortDir === "asc" ? va - vb : vb - va;
+
+                case "rating":
+                default:
+                    va = a.ratingMediu || 0;
+                    vb = b.ratingMediu || 0;
+                    return sortDir === "asc" ? va - vb : vb - va;
+            }
+        });
+    }
+
+    function renderFilms(films) {
+        const container = document.getElementById("results");
+        const info = document.getElementById("resultsInfo");
+        container.innerHTML = "";
+
+        if (!films || films.length === 0) {
+            info.textContent = "Nu există rezultate pentru filtrele curente.";
+            return;
+        }
+
+        info.textContent = `Rezultate: ${films.length} film(e)`;
+
+        const sorted = applySort(films);
+
+        sorted.forEach(film => {
+            const card = document.createElement("div");
+            card.className = "film-card";
+            card.onclick = () => {
+                // Pagina detaliu film (de implementat ulterior)
+                window.location.href = "/film.html?id=" + film.idFilm;
+            };
+
+            card.innerHTML = `
+                <div class="film-header">
+                    <div class="film-title">${film.titlu}</div>
+                    <div class="rating">⭐ ${film.ratingMediu ?? "-"}</div>
+                </div>
+                <div class="film-meta">
+                    <span><b>An:</b> ${film.anAparitie ?? "-"}</span>
+                    &nbsp;|&nbsp;
+                    <span><b>Durată:</b> ${film.durataMin ?? "-"} min</span>
+                </div>
+                <div class="film-desc">
+                    <b>Descriere:</b> ${film.descriere ?? "N/A"}
+                </div>
+                <div class="film-tags">
+                    <span class="tag-label">Genuri:</span> ${film.genuri ?? "-"}
+                </div>
+                <div class="film-tags">
+                    <span class="tag-label">Actori:</span> ${film.actori ?? "-"}
+                </div>
+                <div class="film-tags">
+                    <span class="tag-label">Regizori:</span> ${film.regizori ?? "-"}
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+    }
+
+    async function searchFilms() {
+        const searchText = document.getElementById("searchInput").value.trim();
+        const searchField = document.getElementById("searchFieldSelect").value;
+
+        let query = "?";
+
+        if (searchText !== "") {
+            // mapează titlu/gen/actor/regizor pe parametrii backend-ului
+            if (searchField === "titlu") {
+                query += "titlu=" + encodeURIComponent(searchText) + "&";
+            } else if (searchField === "gen") {
+                query += "gen=" + encodeURIComponent(searchText) + "&";
+            } else if (searchField === "actor") {
+                query += "actor=" + encodeURIComponent(searchText) + "&";
+            } else if (searchField === "regizor") {
+                query += "regizor=" + encodeURIComponent(searchText) + "&";
+            }
+        }
+
+        const data = await fetchFilms(query);
+        allFilms = applyClientFilters(data);
+        renderFilms(allFilms);
+    }
+
+    function resetFilters() {
+        document.getElementById("searchInput").value = "";
+        document.getElementById("ratingMinInput").value = "";
+        document.getElementById("durataMaxInput").value = "";
+        document.getElementById("searchFieldSelect").value = "titlu";
+        document.getElementById("sortBySelect").value = "rating";
+        document.getElementById("sortDirSelect").value = "desc";
+        // reîncarcă toate filmele
+        loadAllFilms();
+    }
+
+    async function loadAllFilms() {
+        const data = await fetchFilms(""); // fără parametri -> toate
+        allFilms = data;
+        allFilms = applyClientFilters(allFilms);
+        renderFilms(allFilms);
+    }
+
+    // Enter în search → caută
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("searchInput").addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                searchFilms();
+            }
+        });
+
+        // încărcăm toate filmele la început
+        loadAllFilms();
+    });
+</script>
+
+</body>
+</html>

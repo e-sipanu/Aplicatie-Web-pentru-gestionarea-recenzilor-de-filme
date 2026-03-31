@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ro" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${film.titlu}">Film</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #101827;
+            color: #f9fafb;
+            margin: 0;
+        }
+
+        .top {
+            background: #111827;
+            padding: 16px 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .top-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .back a {
+            color: #60a5fa;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .user {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 24px 40px;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 14px;
+        }
+
+        .card {
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+        }
+
+        .film-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin: 0 0 6px 0;
+        }
+
+        .meta {
+            color: #9ca3af;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .rating {
+            display: inline-block;
+            margin-left: 8px;
+            color: #4ade80;
+            font-weight: 800;
+        }
+
+        .desc {
+            color: #e5e7eb;
+            line-height: 1.35;
+        }
+
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            margin: 0 0 12px 0;
+        }
+
+        .review {
+            background: #0b1220;
+            border: 1px solid #1f2937;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .review-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .review-user {
+            font-weight: 700;
+        }
+
+        .review-date {
+            color: #9ca3af;
+            font-size: 0.85rem;
+        }
+
+        .review-rating {
+            color: #fbbf24;
+            font-weight: 800;
+        }
+
+        .review-title {
+            margin-top: 6px;
+            font-weight: 800;
+        }
+
+        .review-text {
+            margin-top: 6px;
+            color: #e5e7eb;
+            white-space: pre-wrap;
+        }
+
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .delete-btn:hover {
+            background: #dc2626;
+        }
+
+        .edit-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .edit-btn:hover {
+            background: #2563eb;
+        }
+
+        .review-actions {
+            margin-top: 10px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            margin: 10px 0 4px;
+            color: #e5e7eb;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #374151;
+            background: #020617;
+            color: #e5e7eb;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: #3b82f6;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        .message {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        .message.error {
+            color: #f97373;
+        }
+
+        .message.success {
+            color: #4ade80;
+        }
+
+        @media (max-width: 900px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top">
+        <div class="top-inner">
+            <div class="back"><a href="/filme">← Înapoi la filme</a></div>
+            <div class="user">Logat ca: <b th:text="${username}">user</b></div>
+        </div>
+    </div>
+
+    <div class="content">
+        <!-- Detalii film -->
+        <div class="card">
+            <div class="film-title">
+                <span th:text="${film.titlu}">Titlu</span>
+                <span class="rating"><span
+                        th:text="${film.ratingMediu != null ? film.ratingMediu : '-'}">-</span></span>
+            </div>
+
+            <div class="meta">
+                <b>An:</b> <span th:text="${film.anAparitie}">-</span>
+                &nbsp;|&nbsp;
+                <b>Durată:</b> <span th:text="${film.durataMin}">-</span> min
+            </div>
+
+            <div class="desc">
+                <b>Descriere:</b>
+                <span th:text="${film.descriere != null ? film.descriere : 'N/A'}">N/A</span>
+            </div>
+
+            <div class="desc" th:if="${film.genuri != null && !#strings.isEmpty(film.genuri)}">
+                <b>Genuri:</b>
+                <span th:text="${film.genuri}">Drama, Actiune</span>
+            </div>
+
+            <div class="desc" th:if="${film.actori != null && !#strings.isEmpty(film.actori)}">
+                <b>Actori:</b>
+                <span th:text="${film.actori}">Tim Robbins, Morgan Freeman</span>
+            </div>
+
+            <div class="desc" th:if="${film.regizori != null && !#strings.isEmpty(film.regizori)}">
+                <b>Regizori:</b>
+                <span th:text="${film.regizori}">Frank Darabont</span>
+            </div>
+
+            <hr style="border:0; border-top:1px solid #1f2937; margin:16px 0;">
+
+            <div class="section-title">Recenzii</div>
+
+            <div th:if="${#lists.isEmpty(recenzii)}" style="color:#9ca3af;">
+                Nu există recenzii încă. Fii primul! 🙂
+            </div>
+
+            <div th:each="r : ${recenzii}" class="review">
+                <div class="review-head">
+                    <div>
+                        <span class="review-user" th:text="${r.numeUtilizator}">user</span>
+                        <span class="review-date">• <span th:text="${r.dataPostarii}">2026-01-01</span></span>
+                    </div>
+                    <div class="review-rating"><span th:text="${r.rating}">10</span>/10</div>
+                </div>
+
+                <div class="review-title" th:if="${r.titluRecenzie != null && !#strings.isEmpty(r.titluRecenzie)}"
+                    th:text="${r.titluRecenzie}">
+                    Titlu recenzie
+                </div>
+
+                <div class="review-text" th:id="'review-text-' + ${r.idRecenzie}" th:text="${r.textRecenzie}">Text</div>
+
+                <!-- Formular de editare (ascuns implicit) -->
+                <div class="edit-form" th:id="'edit-form-' + ${r.idRecenzie}" style="display:none; margin-top:10px;">
+                    <form
+                        th:action="@{/filme/{filmId}/recenzii/{reviewId}/edit(filmId=${film.idFilm}, reviewId=${r.idRecenzie})}"
+                        method="post">
+                        <label>Titlu (optional)</label>
+                        <input type="text" name="titluRecenzie" th:value="${r.titluRecenzie}" maxlength="100">
+
+                        <label>Text recenzie</label>
+                        <textarea name="textRecenzie" required th:text="${r.textRecenzie}"></textarea>
+
+                        <label>Rating</label>
+                        <select name="rating" required>
+                            <option th:each="i : ${#numbers.sequence(10, 1)}" th:value="${i}"
+                                th:selected="${i == r.rating}" th:text="${i}">10</option>
+                        </select>
+
+                        <button type="submit" style="width:100%; margin-top:10px; background:#22c55e;">Salvează</button>
+                    </form>
+                </div>
+
+                <!-- Buton edit și delete pentru recenziile utilizatorului logat -->
+                <div class="review-actions" th:if="${session.userId == r.idUtilizator}">
+                    <button type="button" class="edit-btn" th:onclick="'toggleEdit(' + ${r.idRecenzie} + ')'"
+                        th:id="'edit-toggle-' + ${r.idRecenzie}">Editează</button>
+
+                    <form
+                        th:action="@{/filme/{filmId}/recenzii/{reviewId}/delete(filmId=${film.idFilm}, reviewId=${r.idRecenzie})}"
+                        method="post" style="display:inline;" onsubmit="return confirmDelete(this);">
+                        <button type="submit" class="delete-btn">Șterge recenzia</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formular recenzie -->
+        <div class="card">
+            <div class="section-title">Adaugă o recenzie</div>
+
+            <form th:action="@{/filme/{id}/recenzii(id=${film.idFilm})}" method="post">
+                <label for="titluRecenzie">Titlu (opțional)</label>
+                <input id="titluRecenzie" name="titluRecenzie" type="text" maxlength="100"
+                    placeholder="ex: Super film!">
+
+                <label for="textRecenzie">Text recenzie (obligatoriu)</label>
+                <textarea id="textRecenzie" name="textRecenzie" required
+                    placeholder="Scrie aici recenzia ta..."></textarea>
+
+                <label for="rating">Rating (1-10)</label>
+                <select id="rating" name="rating" required>
+                    <option value="10" selected>10</option>
+                    <option value="9">9</option>
+                    <option value="8">8</option>
+                    <option value="7">7</option>
+                    <option value="6">6</option>
+                    <option value="5">5</option>
+                    <option value="4">4</option>
+                    <option value="3">3</option>
+                    <option value="2">2</option>
+                    <option value="1">1</option>
+                </select>
+
+                <button type="submit">Postează recenzia</button>
+            </form>
+
+            <div class="message error" th:if="${param.err != null and param.err[0] == '1'}">
+                Eroare: textul recenziei este obligatoriu și rating-ul trebuie să fie între 1 și 10.
+            </div>
+            <div class="message error" th:if="${param.err != null and param.err[0] == '2'}">
+                Ai deja o recenzie pentru acest film. Șterge-o pentru a adăuga una nouă.
+            </div>
+            <div class="message error" th:if="${param.err != null and param.err[0] == '3'}">
+                Nu ai permisiunea să ștergi această recenzie.
+            </div>
+            <div class="message success" th:if="${param.ok != null and param.ok[0] == '1'}">
+                Recenzie postată cu succes!
+            </div>
+            <div class="message success" th:if="${param.ok != null and param.ok[0] == '2'}">
+                Recenzie ștearsă cu succes!
+            </div>
+            <div class="message success" th:if="${param.ok != null and param.ok[0] == '3'}">
+                Recenzie modificată cu succes!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Funcție pentru confirmarea ștergerii unei recenzii
+         * Previne ștergerea accidentală prin dialog de confirmare
+         * și previne dublul click
+         */
+        function confirmDelete(form) {
+            // Verificăm dacă formularul nu este deja în curs de submit
+            if (form.submitting) {
+                return false;
+            }
+
+            // Dialog de confirmare
+            const confirmed = confirm(
+                'Ești sigur că vrei să ștergi această recenzie?\n\n' +
+                'Această acțiune este PERMANENTĂ și nu poate fi anulată!\n\n' +
+                'Apasă OK pentru a confirma ștergerea sau Cancel pentru a anula.'
+            );
+
+            if (confirmed) {
+                // Marcăm formularul ca fiind în curs de submit
+                form.submitting = true;
+
+                // Dezactivăm butonul pentru a preveni dublul click
+                const button = form.querySelector('button[type="submit"]');
+                if (button) {
+                    button.disabled = true;
+                    button.textContent = 'Se sterge...';
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /**
+         * Funcție pentru afișarea formularului de editare
+         */
+        function toggleEdit(reviewId) {
+            const reviewText = document.getElementById('review-text-' + reviewId);
+            const editForm = document.getElementById('edit-form-' + reviewId);
+            const editBtn = document.getElementById('edit-toggle-' + reviewId);
+
+            if (editForm.style.display === 'none') {
+                // Afișează formularul de editare
+                reviewText.style.display = 'none';
+                editForm.style.display = 'block';
+                editBtn.textContent = 'Anulează';
+                editBtn.style.background = '#6b7280';
+            } else {
+                // Ascunde formularul de editare
+                reviewText.style.display = 'block';
+                editForm.style.display = 'none';
+                editBtn.textContent = 'Editează';
+                editBtn.style.background = '#3b82f6';
+            }
+        }
+
+        /**
+         * Funcție pentru anularea editării
+         */
+        function cancelEdit(reviewId) {
+            const reviewText = document.getElementById('review-text-' + reviewId);
+            const editForm = document.getElementById('edit-form-' + reviewId);
+            const editBtn = document.getElementById('edit-toggle-' + reviewId);
+
+            reviewText.style.display = 'block';
+            editForm.style.display = 'none';
+            editBtn.textContent = 'Editează';
+            editBtn.style.background = '#3b82f6';
+        }
+    </script>
+
+</body>
+
+</html>

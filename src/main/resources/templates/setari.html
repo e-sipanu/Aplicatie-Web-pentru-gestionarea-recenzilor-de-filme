@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ro" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Setări Cont - Filme</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			background: #101827;
+			color: #f9fafb;
+			margin: 0;
+			padding: 20px;
+		}
+
+		.container {
+			max-width: 600px;
+			margin: 0 auto;
+		}
+
+		.header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 24px;
+		}
+
+		h1 {
+			font-size: 1.75rem;
+			margin: 0;
+		}
+
+		.back-link {
+			color: #60a5fa;
+			text-decoration: none;
+			font-size: 0.9rem;
+		}
+
+		.back-link:hover {
+			text-decoration: underline;
+		}
+
+		.card {
+			background: #111827;
+			border-radius: 12px;
+			padding: 24px;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+			margin-bottom: 20px;
+		}
+
+		h2 {
+			font-size: 1.25rem;
+			margin-top: 0;
+			margin-bottom: 16px;
+			color: #f9fafb;
+		}
+
+		label {
+			display: block;
+			font-size: 0.9rem;
+			margin-bottom: 4px;
+			color: #d1d5db;
+		}
+
+		input {
+			width: 100%;
+			padding: 10px 12px;
+			border-radius: 8px;
+			border: 1px solid #374151;
+			background: #020617;
+			color: #e5e7eb;
+			margin-bottom: 12px;
+			box-sizing: border-box;
+		}
+
+		input:focus {
+			outline: none;
+			border-color: #3b82f6;
+		}
+
+		button {
+			padding: 10px 20px;
+			border-radius: 8px;
+			border: none;
+			font-weight: 600;
+			cursor: pointer;
+			font-size: 0.9rem;
+		}
+
+		.btn-primary {
+			background: #3b82f6;
+			color: white;
+		}
+
+		.btn-primary:hover {
+			background: #2563eb;
+		}
+
+		.btn-danger {
+			background: #ef4444;
+			color: white;
+		}
+
+		.btn-danger:hover {
+			background: #dc2626;
+		}
+
+		.message {
+			padding: 12px;
+			border-radius: 8px;
+			margin-bottom: 16px;
+			font-size: 0.9rem;
+		}
+
+		.message.success {
+			background: #065f46;
+			color: #d1fae5;
+			border: 1px solid #10b981;
+		}
+
+		.message.error {
+			background: #7f1d1d;
+			color: #fecaca;
+			border: 1px solid #ef4444;
+		}
+
+		.danger-zone {
+			border-top: 2px solid #374151;
+			padding-top: 20px;
+			margin-top: 20px;
+		}
+
+		.danger-zone h3 {
+			color: #ef4444;
+			font-size: 1rem;
+			margin-bottom: 8px;
+		}
+
+		.danger-zone p {
+			color: #9ca3af;
+			font-size: 0.85rem;
+			margin-bottom: 12px;
+		}
+
+		.user-info {
+			background: #1f2937;
+			padding: 12px;
+			border-radius: 8px;
+			margin-bottom: 16px;
+		}
+
+		.user-info p {
+			margin: 4px 0;
+			font-size: 0.9rem;
+		}
+
+		.user-info strong {
+			color: #60a5fa;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="container">
+		<div class="header">
+			<h1>Setări Cont</h1>
+			<a href="/filme" class="back-link">← Înapoi la filme</a>
+		</div>
+
+		<!-- Mesaje de succes/eroare -->
+		<div th:if="${success}" class="message success">
+			Parola a fost schimbată cu succes!
+		</div>
+
+		<div th:if="${error}" class="message error">
+			<span th:if="${param.err != null and param.err[0] == '1'}">Parola nouă trebuie să aibă cel puțin 5
+				caractere.</span>
+			<span th:if="${param.err != null and param.err[0] == '2'}">Parolele nu coincid.</span>
+			<span th:if="${param.err != null and param.err[0] == '3'}">Parola veche este incorectă.</span>
+		</div>
+
+		<!-- Informații utilizator -->
+		<div class="card">
+			<h2>Informații Cont</h2>
+			<div class="user-info">
+				<p><strong>Nume utilizator:</strong> <span th:text="${username}">username</span></p>
+				<p><strong>ID utilizator:</strong> <span th:text="${userId}">1</span></p>
+			</div>
+		</div>
+
+        <div class="card">
+            <h2>Statistici Activitate</h2>
+            <div style="display: flex; gap: 20px;">
+                <div class="user-info" style="flex: 1; text-align: center;">
+                    <p style="color: #9ca3af; font-size: 0.85rem;">Recenzii Scrise</p>
+                    <p style="font-size: 1.5rem; font-weight: bold; color: #60a5fa; margin: 5px 0;"
+                       th:text="${nrRecenzii}">0</p>
+                </div>
+                <div class="user-info" style="flex: 1; text-align: center;">
+                    <p style="color: #9ca3af; font-size: 0.85rem;">Media Notelor Date</p>
+                    <p style="font-size: 1.5rem; font-weight: bold; color: #34d399; margin: 5px 0;"
+                       th:text="${medieRating}">0.0</p>
+                </div>
+            </div>
+            <p style="font-size: 0.8rem; color: #6b7280; text-align: center; margin-top: 10px;">
+            </p>
+        </div>
+
+		<!-- Formular schimbare parolă -->
+		<div class="card">
+			<h2>Schimbare Parolă</h2>
+			<form method="post" action="/setari/change-password">
+				<label for="parolaVeche">Parola veche</label>
+				<input type="password" id="parolaVeche" name="parolaVeche" required>
+
+				<label for="parolaNoua">Parola nouă</label>
+				<input type="password" id="parolaNoua" name="parolaNoua" required minlength="5">
+
+				<label for="parolaConfirmare">Confirmă parola nouă</label>
+				<input type="password" id="parolaConfirmare" name="parolaConfirmare" required minlength="5">
+
+				<button type="submit" class="btn-primary">Schimbă Parola</button>
+			</form>
+		</div>
+
+		<!-- Zona periculoasă - Ștergere cont -->
+		<div class="card">
+			<div class="danger-zone">
+				<h3>Zona Periculoasă</h3>
+				<p>Ștergerea contului este permanentă și nu poate fi anulată. Toate recenziile tale vor fi șterse.</p>
+				<form method="post" action="/setari/delete-account"
+					onsubmit="return confirm('Ești sigur că vrei să îți ștergi contul? Această acțiune nu poate fi anulată!');">
+					<button type="submit" class="btn-danger">Șterge Contul</button>
+				</form>
+			</div>
+		</div>
+
+	</div>
+
+</body>
+
+</html>

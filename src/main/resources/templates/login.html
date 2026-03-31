@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ro" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Autentificare - Filme</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #101827;
+            color: #f9fafb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: #111827;
+            border-radius: 12px;
+            padding: 24px 28px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 320px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #9ca3af;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #374151;
+            background: #020617;
+            color: #e5e7eb;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: #3b82f6;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        .link {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .link a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+
+        .link a:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .message.error {
+            color: #f97373;
+        }
+
+        .message.success {
+            color: #4ade80;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <h1>Autentificare</h1>
+        <div class="subtitle">Intră în platforma de filme</div>
+
+        <form method="post" action="/login">
+            <label for="username">Nume utilizator</label>
+            <input type="text" id="username" name="numeUtilizator" required>
+
+            <label for="password">Parolă</label>
+            <input type="password" id="password" name="parola" required>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <div th:if="${error}" class="message error">
+            Credențiale invalide. Verifică numele de utilizator și parola.
+        </div>
+
+        <div class="link">
+            Nu ai cont? <a href="/register">Înregistrează-te</a>
+
+        </div>
+    </div>
+
+
+</body>
+
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ro" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Filme</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #101827;
+            color: #f9fafb;
+            margin: 0;
+            padding: 0;
+        }
+
+        .top-bar {
+            background: #111827;
+            padding: 16px 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .top-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-right: 8px;
+            white-space: nowrap;
+        }
+
+        input,
+        select,
+        button {
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #374151;
+            background: #020617;
+            color: #e5e7eb;
+            box-sizing: border-box;
+            font-size: 0.9rem;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        button {
+            border: none;
+            background: #3b82f6;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        .content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 24px 30px;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #9ca3af;
+            margin-bottom: 12px;
+        }
+
+        .cards {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .card {
+            background: #111827;
+            border-radius: 12px;
+            padding: 14px 16px;
+            border: 1px solid #1f2937;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+            cursor: pointer;
+            transition: transform 0.08s ease-out, border-color 0.08s ease-out;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: #3b82f6;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        .film-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .rating {
+            font-weight: 700;
+            color: #4ade80;
+        }
+
+        .meta {
+            font-size: 0.85rem;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+
+        .desc {
+            font-size: 0.9rem;
+            margin-top: 8px;
+            color: #e5e7eb;
+        }
+
+        .empty {
+            background: #111827;
+            border: 1px solid #1f2937;
+            padding: 14px 16px;
+            border-radius: 12px;
+            color: #9ca3af;
+        }
+
+        @media (max-width: 800px) {
+            input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-bar">
+        <div class="top-inner">
+            <form method="get" th:action="@{/filme}" style="display:flex; gap:10px; align-items:center;">
+                <div class="title" style="margin-right:0;">Filme</div>
+
+                <!-- search text -->
+                <input type="text" name="q" th:value="${q}" placeholder="Caută..." style="min-width: 260px;" />
+
+                <!-- search field -->
+                <select name="field" th:value="${field}">
+                    <option value="titlu" th:selected="${field == 'titlu'}">Titlu</option>
+                    <option value="gen" th:selected="${field == 'gen'}">Gen</option>
+                    <option value="actor" th:selected="${field == 'actor'}">Actor</option>
+                    <option value="regizor" th:selected="${field == 'regizor'}">Regizor</option>
+                </select>
+
+                <!-- sorting -->
+                <select name="sort">
+                    <option value="rating" th:selected="${sort == 'rating'}">Sort: Rating</option>
+                    <option value="titlu" th:selected="${sort == 'titlu'}">Sort: Titlu</option>
+                    <option value="an" th:selected="${sort == 'an'}">Sort: An</option>
+                    <option value="durata" th:selected="${sort == 'durata'}">Sort: Durată</option>
+                </select>
+
+                <select name="dir">
+                    <option value="desc" th:selected="${dir == 'desc'}">Desc</option>
+                    <option value="asc" th:selected="${dir == 'asc'}">Asc</option>
+                </select>
+
+                <button type="submit">Caută</button>
+                <a th:href="@{/filme}" style="color:#60a5fa; text-decoration:none; font-size:0.9rem;">Reset</a>
+            </form>
+
+            <div style="flex-grow:1;"></div>
+
+            <div style="display:flex; align-items:center; gap:10px;">
+                <a href="/filme/filme-populare" style="color:#60a5fa; text-decoration:none; font-size:0.85rem;">Filme
+                    Populare</a>
+                <span th:text="${username}" style="color: #9ca3af; font-size: 0.9rem;">User</span>
+                <a href="/setari" style="color:#60a5fa; text-decoration:none; font-size:0.85rem;">Setări</a>
+                <form method="post" th:action="@{/logout}" style="margin:0;">
+                    <button type="submit"
+                        style="background:#ef4444; padding: 6px 12px; font-size: 0.85rem;">Logout</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="subtitle">
+            Total rezultate: <span th:text="${#lists.size(filme)}">0</span>
+        </div>
+
+        <div class="cards" th:if="${#lists.size(filme) > 0}">
+            <div class="card" th:each="film : ${filme}" th:onclick="|window.location.href='/filme/${film.idFilm}'|">
+
+                <div class="card-header">
+                    <div class="film-title" th:text="${film.titlu}">Titlu</div>
+                    <div class="rating"><span th:text="${film.ratingMediu != null ? film.ratingMediu : '-'}">-</span>
+                    </div>
+                </div>
+
+                <div class="meta">
+                    <b>An:</b> <span th:text="${film.anAparitie}">-</span>
+                    &nbsp;|&nbsp;
+                    <b>Durată:</b> <span th:text="${film.durataMin}">-</span> min
+                </div>
+
+                <div class="desc">
+                    <b>Descriere:</b>
+                    <span th:text="${film.descriere != null ? film.descriere : 'N/A'}">N/A</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="empty" th:if="${#lists.size(filme) == 0}">
+            Nu există rezultate pentru criteriile curente.
+        </div>
+    </div>
+
+</body>
+
+</html>

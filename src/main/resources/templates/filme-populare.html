@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ro" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Filme Populare - Filme</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			background: #101827;
+			color: #f9fafb;
+			margin: 0;
+			padding: 0;
+		}
+
+		.top-bar {
+			background: #111827;
+			padding: 16px 24px;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+			position: sticky;
+			top: 0;
+			z-index: 10;
+		}
+
+		.top-inner {
+			max-width: 1100px;
+			margin: 0 auto;
+			display: flex;
+			gap: 10px;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		.title {
+			font-size: 1.15rem;
+			font-weight: 700;
+		}
+
+		.nav-links {
+			display: flex;
+			gap: 15px;
+			align-items: center;
+		}
+
+		.nav-links a {
+			color: #60a5fa;
+			text-decoration: none;
+			font-size: 0.9rem;
+		}
+
+		.nav-links a:hover {
+			text-decoration: underline;
+		}
+
+		.content {
+			max-width: 1100px;
+			margin: 0 auto;
+			padding: 20px 24px 30px;
+		}
+
+		.filter-card {
+			background: #111827;
+			border-radius: 12px;
+			padding: 20px;
+			margin-bottom: 20px;
+			border: 1px solid #1f2937;
+		}
+
+		.filter-card h2 {
+			margin-top: 0;
+			font-size: 1.25rem;
+			margin-bottom: 16px;
+		}
+
+		.filter-form {
+			display: flex;
+			gap: 15px;
+			align-items: end;
+			flex-wrap: wrap;
+		}
+
+		.form-group {
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+		}
+
+		label {
+			font-size: 0.9rem;
+			color: #d1d5db;
+		}
+
+		input {
+			padding: 8px 12px;
+			border-radius: 8px;
+			border: 1px solid #374151;
+			background: #020617;
+			color: #e5e7eb;
+			font-size: 0.9rem;
+			width: 150px;
+		}
+
+		input:focus {
+			outline: none;
+			border-color: #3b82f6;
+		}
+
+		button {
+			padding: 8px 20px;
+			border-radius: 8px;
+			border: none;
+			background: #3b82f6;
+			color: white;
+			font-weight: 600;
+			cursor: pointer;
+			font-size: 0.9rem;
+		}
+
+		button:hover {
+			background: #2563eb;
+		}
+
+		.info-box {
+			background: #1f2937;
+			padding: 12px;
+			border-radius: 8px;
+			margin-bottom: 16px;
+			font-size: 0.9rem;
+			color: #9ca3af;
+		}
+
+		.info-box strong {
+			color: #60a5fa;
+		}
+
+		.cards {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+		}
+
+		.card {
+			background: #111827;
+			border-radius: 12px;
+			padding: 14px 16px;
+			border: 1px solid #1f2937;
+			box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+			cursor: pointer;
+			transition: transform 0.08s ease-out, border-color 0.08s ease-out;
+		}
+
+		.card:hover {
+			transform: translateY(-2px);
+			border-color: #3b82f6;
+		}
+
+		.card-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+			gap: 10px;
+		}
+
+		.film-title {
+			font-size: 1.1rem;
+			font-weight: 700;
+		}
+
+		.rating {
+			font-weight: 700;
+			color: #4ade80;
+		}
+
+		.meta {
+			font-size: 0.85rem;
+			color: #9ca3af;
+			margin-top: 4px;
+		}
+
+		.desc {
+			font-size: 0.9rem;
+			margin-top: 8px;
+			color: #e5e7eb;
+		}
+
+		.empty {
+			background: #111827;
+			border: 1px solid #1f2937;
+			padding: 14px 16px;
+			border-radius: 12px;
+			color: #9ca3af;
+			text-align: center;
+		}
+
+		.loading {
+			text-align: center;
+			padding: 40px;
+			color: #9ca3af;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="top-bar">
+		<div class="top-inner">
+			<div class="title">Filme Populare</div>
+			<div class="nav-links">
+				<a href="/filme">← Toate filmele</a>
+				<span th:text="${username}" style="color: #9ca3af;">User</span>
+				<form method="post" th:action="@{/logout}" style="margin:0;">
+					<button type="submit"
+						style="background:#ef4444; padding: 6px 12px; font-size: 0.85rem;">Logout</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="content">
+		<!-- Formular de filtrare -->
+		<div class="filter-card">
+			<h2>Criterii de Căutare</h2>
+			<form method="get" action="/filme/filme-populare" class="filter-form">
+				<div class="form-group">
+					<label for="minRecenzii">Număr minim recenzii:</label>
+					<input type="number" id="minRecenzii" name="minRecenzii" th:value="${minRecenzii}" min="1"
+						value="1">
+				</div>
+				<div class="form-group">
+					<label for="minRating">Rating minim:</label>
+					<input type="number" id="minRating" name="minRating" th:value="${minRating}" min="0" max="10"
+						step="0.1" value="7.0">
+				</div>
+				<button type="submit">Caută</button>
+				<a href="/filme/filme-populare"
+					style="color:#60a5fa; text-decoration:none; font-size:0.9rem; align-self: center;">Reset</a>
+			</form>
+		</div>
+
+		<!-- Rezultate -->
+		<div id="rezultate" class="loading">Se încarcă...</div>
+	</div>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		const minRecenzii = /*[[${minRecenzii}]]*/ 3;
+		const minRating = /*[[${minRating}]]*/ 7.0;
+
+		// Încarcă filmele populare
+		fetch(`/api/filme/populare?minRecenzii=${minRecenzii}&minRating=${minRating}`)
+			.then(response => response.json())
+			.then(data => {
+				const container = document.getElementById('rezultate');
+
+				if (data.length === 0) {
+					container.innerHTML = '<div class="empty">Nu există filme care îndeplinesc criteriile.</div>';
+					return;
+				}
+
+				let html = '<div class="cards">';
+				data.forEach(film => {
+					html += `
+                        <div class="card" onclick="window.location.href='/filme/${film.idFilm}'">
+                            <div class="card-header">
+                                <div class="film-title">${film.titlu}</div>
+                                <div class="rating">${film.ratingMediu !== null ? film.ratingMediu : '-'}</div>
+                            </div>
+                            <div class="meta">
+                                <b>An:</b> ${film.anAparitie} &nbsp;|&nbsp;
+                                <b>Durată:</b> ${film.durataMin} min
+                            </div>
+                            <div class="desc">
+                                <b>Descriere:</b> ${film.descriere || 'N/A'}
+                            </div>
+                        </div>
+                    `;
+				});
+				html += '</div>';
+				container.innerHTML = html;
+			})
+			.catch(error => {
+				console.error('Eroare:', error);
+				document.getElementById('rezultate').innerHTML =
+					'<div class="empty">Eroare la încărcarea filmelor.</div>';
+			});
+		/*]]>*/
+	</script>
+
+</body>
+
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Înregistrare - Filme</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #020617;
+            color: #f9fafb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: #020617;
+            border-radius: 12px;
+            padding: 24px 28px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 340px;
+            border: 1px solid #1f2937;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #9ca3af;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #374151;
+            background: #020617;
+            color: #e5e7eb;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: #22c55e;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+
+        button:hover {
+            background: #16a34a;
+        }
+
+        .link {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .link a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+
+        .link a:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .message.error {
+            color: #f97373;
+        }
+
+        .message.success {
+            color: #4ade80;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <h1>Înregistrare</h1>
+        <div class="subtitle">Creează-ți cont pentru a evalua filme</div>
+
+        <form id="registerForm">
+            <label for="username">Nume utilizator</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="password">Parolă</label>
+            <input type="password" id="password" name="password" required>
+
+            <label for="confirmPassword">Confirmă parola</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required>
+
+            <button type="submit">Înregistrează-te</button>
+        </form>
+
+        <div id="registerMessage" class="message"></div>
+
+        <div class="link">
+            Ai deja cont? <a href="/login">Autentifică-te</a>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('registerForm');
+        const msgDiv = document.getElementById('registerMessage');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            msgDiv.textContent = '';
+            msgDiv.className = 'message';
+
+            const numeUtilizator = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const parola = document.getElementById('password').value;
+            const confirmParola = document.getElementById('confirmPassword').value;
+
+            if (parola !== confirmParola) {
+                msgDiv.textContent = 'Parolele nu coincid.';
+                msgDiv.classList.add('error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ numeUtilizator, parola, email })
+                });
+
+                const text = await response.text();
+
+                if (response.ok) {
+                    msgDiv.textContent = text;
+                    msgDiv.classList.add('success');
+
+                    // opțional: redirect după 1-2 secunde la login
+                    // setTimeout(() => window.location.href = '/login.html', 1500);
+                } else {
+                    // dacă backend-ul returnează JSON de eroare, îl poți parsa
+                    // aici luăm simplu ca text
+                    msgDiv.textContent = text || 'Eroare la înregistrare.';
+                    msgDiv.classList.add('error');
+                }
+            } catch (err) {
+                msgDiv.textContent = 'Eroare de conexiune la server.';
+                msgDiv.classList.add('error');
+                console.error(err);
+            }
+        });
+    </script>
+
+</body>
+
+</html>
